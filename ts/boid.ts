@@ -1,4 +1,7 @@
-﻿module Core {
+﻿/// <autosync enabled="true" />
+/// <reference path="steeringmanager.ts" />
+/// <reference path="iboid.ts" />
+module Core {
     export class Boid implements IBoid {
 
         position: THREE.Vector3;
@@ -9,10 +12,10 @@
         y: number;
         z: number;
 
-        private maxVelocity = 3;
+        private maxVelocity = 0.1;
 
         constructor(posX: number, posY: number, posZ: number, totalMass: number) {
-            console.log("boid init", this);
+            console.info("boid init");
             this.position = new THREE.Vector3(posX, posY, posZ);
             this.velocity = new THREE.Vector3(); // initial velocity = 0
             this.mass = totalMass;
@@ -25,12 +28,13 @@
 
         think(): void {
             this.steering.wander();
+            console.log("thinking from boid.ts");
         }
 
         update(): void {
             this.think();
             this.steering.update();
-
+            console.log("updating from boid");
             this.x = this.position.x;
             this.y = this.position.y;
             this.z = this.position.z;

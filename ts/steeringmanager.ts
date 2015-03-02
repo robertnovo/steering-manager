@@ -1,6 +1,4 @@
-﻿/// <autosync enabled="true" />
-/// <reference path="../app.ts" />
-module Core {
+﻿module Core {
     export class SteeringManager {
 
         private circleDistance = 6;
@@ -18,7 +16,7 @@ module Core {
         host: IBoid;
 
         constructor(host: IBoid) {
-            console.log("steering manager init", host);
+            console.info("steering manager init");
             this.host = host;
             this.desired = new THREE.Vector3();
             this.steering = new THREE.Vector3();
@@ -51,7 +49,7 @@ module Core {
         update(): void {
             var velocity = this.host.getVelocity();
             var position = this.host.getPosition();
-            this.truncate(this.steering, 100); // max force
+            this.truncate(this.steering, 1); // max force
             this.steering.multiplyScalar(1 / this.host.getMass());
             velocity.add(this.steering);
             this.truncate(velocity, this.host.getMaxVelocity());
@@ -85,12 +83,25 @@ module Core {
             circleCenter.multiplyScalar(this.circleDistance);
 
             /*TODO: Kolla vad den här rackaren gör, praktiskt*/
-            var displacement = new THREE.Vector3(0, -1, 0);
+            var displacement = new THREE.Vector3(0, 0, 0);
             displacement.multiplyScalar(this.circleRadius);
 
             var wanderForce = circleCenter.add(displacement);
 
             return wanderForce;
+        }
+
+        pursuit(target: IBoid) {
+            this.steering.add(this.doPursuit(target));
+        }
+
+        private doPursuit(target: IBoid) {
+            var distance = target.getPosition().sub(this.host.getPosition());
+            var updatesNeeded = distance.length() / this.host.getMaxVelocity();
+            var tv = target.getVelocity().clone();
+            tv.multiplyScalar(updatesNeeded);
+            this.targetFuturePosition = target.getPosition().clone().add(tv);
+            return this.doSeek(this.targetFuturePosition);
         }
     }
 }

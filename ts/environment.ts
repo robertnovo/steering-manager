@@ -1,4 +1,6 @@
-﻿module Environment {
+﻿/// <autosync enabled="true" />
+
+module Environment {
     "use strict";
 
     class SceneFactory {
@@ -41,26 +43,26 @@
     }
 
     class CameraFactory {
-        camera: THREE.PerspectiveCamera;
+        _camera: THREE.PerspectiveCamera;
         updateSize: () => void;
 
         constructor(fov: number, aspect: number, near: number, far: number) {
-            this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            this.camera.position.x = 200;
-            this.camera.position.y = 200;
-            this.camera.position.z = 200;
-            this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+            this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            this._camera.position.x = 200;
+            this._camera.position.y = 200;
+            this._camera.position.z = 200;
+            this._camera.lookAt(new THREE.Vector3(0, 0, 0));
 
             this.updateSize = () => {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
+                this._camera.aspect = window.innerWidth / window.innerHeight;
+                this._camera.updateProjectionMatrix();
             };
             window.addEventListener("resize", this.updateSize, false);
             this.updateSize();
         }
 
         get getCameraInstance(): THREE.PerspectiveCamera {
-            return this.camera;
+            return this._camera;
         }
     }
 
@@ -68,5 +70,4 @@
     export var container = Container.getContainer;
     export var renderer = new RenderFactory().getRenderer();
     export var overviewCamera = new CameraFactory(60, 1, 1, 10000).getCameraInstance;
-
 }
